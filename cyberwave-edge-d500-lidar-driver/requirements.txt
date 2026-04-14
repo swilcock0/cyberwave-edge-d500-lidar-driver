@@ -1,0 +1,2 @@
+cyberwave[zenoh]
+pyserial>=3.5

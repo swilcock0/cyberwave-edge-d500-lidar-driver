@@ -1,0 +1,11 @@
+services:
+  driver:
+    build: .
+    env_file: .env
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0
+    volumes:
+      - /tmp/cyberwave-twin.json:/app/cyberwave-twin.json
+    environment:
+      CYBERWAVE_TWIN_JSON_FILE: /app/cyberwave-twin.json
+      ENABLE_ROS: "true"
