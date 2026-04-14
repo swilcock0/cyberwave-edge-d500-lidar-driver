@@ -63,8 +63,9 @@ COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY . .
+RUN chmod +x entrypoint.sh
 
 ENV PYTHONUNBUFFERED=1
 
-# Ensure ROS2 environment is sourced before running the driver
-ENTRYPOINT ["/bin/bash", "-c", "source /opt/ros/humble/setup.bash && python3 -m cyberwave_edge_d500_lidar_driver.main"]
+# Use the entrypoint script to parse Cyberwave Twin JSON and source ROS 2
+ENTRYPOINT ["/app/entrypoint.sh"]

@@ -40,7 +40,7 @@ This driver automatically bridges Lidar data to your Cyberwave Digital Twin.
 
 In addition to publishing up to the Cyberwave platform, this driver is fully multi-lingual on the physical edge device. If enabled, the driver initializes an internal `rclpy` node and co-publishes actual `sensor_msgs.msg.LaserScan` standard messages straight to the physical host's local ROS Data distribution service.
 
-You can configure this by placing an `edge_configs` block inside your local `/tmp/cyberwave-twin.json` OR passing `ENABLE_ROS="true"` on the Docker environment configuration.
+You can configure this by passing `ENABLE_ROS="true"` on the Docker environment configuration.
 
 Supported configuration keys:
 
@@ -48,7 +48,7 @@ Supported configuration keys:
 |---|---|---|
 | `enable_ros` | `false` | Enable or disable the secondary `rclpy` publisher (`ENABLE_ROS=true` overrides this). |
 | `ros_topic` | `/scan` | The native ROS 2 topic name to publish the `.msg`s down. |
-| `ros_frame_id` | `lidar_link` | The TF2 optical link ID to declare as the origin for the `/scan`. |
+| `ros_frame_id` | `lidar_optical_link` | The TF2 optical link ID to declare as the origin for the `/scan`. |
 
 ## Deploying to Cyberwave Edge
 
