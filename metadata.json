@@ -1,0 +1,309 @@
+{
+  
+  "drivers": {
+    "default": {
+      "docker_image": "registry.gitlab.com/swilcock0/d500-lidar-driver",
+      "version": "0.0.1",
+      "params": ["--device", "/dev/ttyUSB0:/dev/ttyUSB0"]
+    }
+  },
+  "links": [
+    {
+      "mass": 0.12,
+      "name": "lidar_base_link",
+      "inertia": {
+        "ixx": 0.0001,
+        "ixy": 0,
+        "ixz": 0,
+        "iyy": 0.0001,
+        "iyz": 0,
+        "izz": 0.0001
+      },
+      "visuals": [
+        {
+          "name": null,
+          "pose": {
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "orientation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "geometry": {
+            "size": null,
+            "type": "mesh",
+            "scale": {
+              "x": 0.001,
+              "y": 0.001,
+              "z": 0.001
+            },
+            "length": null,
+            "radius": null,
+            "filename": "../meshes/LD19.stl",
+            "extensions": {}
+          },
+          "material": {
+            "name": "dark_grey",
+            "color": [
+              0.2,
+              0.2,
+              0.2,
+              1
+            ],
+            "texture": null,
+            "emissive": null,
+            "specular": null,
+            "shininess": null
+          },
+          "extensions": {}
+        }
+      ],
+      "collisions": [
+        {
+          "name": null,
+          "pose": {
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "orientation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "group": "default",
+          "damping": null,
+          "geometry": {
+            "size": null,
+            "type": "cylinder",
+            "scale": null,
+            "length": 0.04,
+            "radius": 0.035,
+            "filename": null,
+            "extensions": {}
+          },
+          "mu_static": null,
+          "stiffness": null,
+          "extensions": {},
+          "mu_dynamic": null,
+          "restitution": null
+        }
+      ],
+      "extensions": {},
+      "center_of_mass": {
+        "x": 0,
+        "y": 0,
+        "z": 0.02
+      }
+    },
+    {
+      "mass": 0,
+      "name": "laser_frame",
+      "inertia": {
+        "ixx": 0,
+        "ixy": 0,
+        "ixz": 0,
+        "iyy": 0,
+        "iyz": 0,
+        "izz": 0
+      },
+      "visuals": [],
+      "collisions": [],
+      "extensions": {},
+      "center_of_mass": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "mass": 0,
+      "name": "lidar_optical_link",
+      "inertia": {
+        "ixx": 0,
+        "ixy": 0,
+        "ixz": 0,
+        "iyy": 0,
+        "iyz": 0,
+        "izz": 0
+      },
+      "visuals": [],
+      "collisions": [],
+      "extensions": {},
+      "center_of_mass": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    }
+  ],
+  "scene": null,
+  "joints": [
+    {
+      "axis": {
+        "x": 0,
+        "y": 0,
+        "z": 1
+      },
+      "name": "lidar_base_to_optical_joint",
+      "pose": {
+        "position": {
+          "x": 0,
+          "y": 0,
+          "z": 0.027
+        },
+        "orientation": {
+          "w": 1,
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "type": "fixed",
+      "limits": null,
+      "dynamics": null,
+      "child_link": "lidar_optical_link",
+      "extensions": {},
+      "calibration": null,
+      "parent_link": "lidar_base_link",
+      "home_position": null,
+      "safety_controller": null
+    },
+    {
+      "axis": {
+        "x": 0,
+        "y": 0,
+        "z": 1
+      },
+      "name": "lidar_base_to_laser_joint",
+      "pose": {
+        "position": {
+          "x": 0,
+          "y": 0,
+          "z": 0.03
+        },
+        "orientation": {
+          "w": 1,
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "type": "fixed",
+      "limits": null,
+      "dynamics": null,
+      "child_link": "laser_frame",
+      "extensions": {},
+      "calibration": null,
+      "parent_link": "lidar_base_link",
+      "home_position": null,
+      "safety_controller": null
+    }
+  ],
+  "physics": null,
+  "sensors": [
+    {
+      "name": "lidar-scan",
+      "pose": {
+        "position": {
+          "x": 0,
+          "y": 0,
+          "z": 0.25
+        },
+        "orientation": {
+          "w": 1,
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "type": "lidar_2d",
+      "parameters": {
+        "id": "lidar-scan",
+        "model": "Waveshare D500",
+        "max_range": 30,
+        "min_range": 0.1,
+        "fov_degrees": 360,
+        "fov_horizontal": 270,
+        "points_per_second": 1000
+      },
+      "parent_link": "base_link",
+      "update_rate": 10
+    }
+  ],
+  "contacts": [],
+  "metadata": {
+    "name": "d500_lidar",
+    "units": "SI",
+    "author": null,
+    "version": "1.0",
+    "extensions": {},
+    "description": "Converted from URDF: d500.urdf",
+    "creation_date": null,
+    "source_format": "urdf"
+  },
+  "actuators": [],
+  "extensions": {
+    "cyberwave": {
+      "schema_hash": "90e8b8ee2acaddac5d4b6a9b07a18b31f9d2c01b1aa746312bc73b6f50364bfa",
+      "capabilities": {
+        "power": {
+          "source": "none",
+          "capacity_wh": -1
+        },
+        "locomotion": {
+          "dof": 0,
+          "mode": "stationary",
+          "can_fly": false,
+          "has_legs": false,
+          "has_wheels": false,
+          "max_linear_velocity": 0,
+          "max_angular_velocity": 0
+        },
+        "navigation": {
+          "autonomy_level": "none",
+          "obstacle_avoidance": false
+        },
+        "structural": {
+          "has_joints": false,
+          "can_actuate": false
+        },
+        "performance": {
+          "max_control_frequency_hz": 30,
+          "min_control_frequency_hz": 0
+        },
+        "manipulation": {
+          "can_grip": false,
+          "max_payload_kg": 0,
+          "manipulator_count": 0
+        }
+      }
+    },
+    "parse_context": {
+      "errors": [],
+      "warnings": [],
+      "materials": {}
+    }
+  },
+  "collision_config": {
+    "pairs": [],
+    "groups": {
+      "default": {
+        "name": "default",
+        "contype": 1,
+        "conaffinity": 1
+      }
+    },
+    "excludes": [],
+    "extensions": {}
+  }
+}
