@@ -36,29 +36,21 @@ This driver automatically bridges Lidar data to your Cyberwave Digital Twin.
 }
 ```
 
-## Native ROS 2 Publishing
+## Configuration (Edge Configs)
 
-In addition to publishing up to the Cyberwave platform, this driver is fully multi-lingual on the physical edge device. If enabled, the driver initializes an internal `rclpy` node and co-publishes actual `sensor_msgs.msg.LaserScan` standard messages straight to the physical host's local ROS Data distribution service.
-
-You can configure this by passing `ENABLE_ROS="true"` on the Docker environment configuration.
-
-Supported configuration keys:
+This driver is configured via the **Digital Twin metadata** on the Cyberwave platform. You can override these by adding an `edge_configs` object to your Twin's metadata in the dashboard.
 
 | Config Key | Default | Description |
 |---|---|---|
-| `enable_ros` | `false` | Enable or disable the secondary `rclpy` publisher (`ENABLE_ROS=true` overrides this). |
-| `ros_topic` | `/scan` | The native ROS 2 topic name to publish the `.msg`s down. |
-| `ros_frame_id` | `lidar_optical_link` | The TF2 optical link ID to declare as the origin for the `/scan`. |
+| `serial_port` | `/dev/ttyACM0` | The device path for the Lidar (e.g., `/dev/ttyUSB0`). Overridden by `LIDAR_PORT` env var. |
+| `product_name` | `LD19` | The LDRobot/Waveshare product model. Overridden by `LIDAR_PRODUCT` env var. |
+| `enable_ros` | `false` | Enable/disable the secondary `rclpy` publisher. Overridden by `ENABLE_ROS=true` env var. |
+| `ros_topic` | `/scan` | The native ROS 2 topic name for local publishing. |
+| `ros_frame_id` | `lidar_optical_link` | The TF2 optical link ID for the `/scan` message header. |
 
-## Deploying to Cyberwave Edge
+## Native ROS 2 Publishing
 
-Push your image to a registry and deploy via the Cyberwave dashboard.
-See the [Edge documentation](https://docs.cyberwave.com/edge/drivers/writing-compatible-drivers) for details.
-
-## Reference drivers
-
-- [cyberwave-edge-camera-driver](https://github.com/cyberwave-os/cyberwave-edge-camera-driver)
-- [cyberwave-edge-so101](https://github.com/cyberwave-os/cyberwave-edge-so101)
+In addition to publishing up to the Cyberwave platform, this driver is fully multi-lingual on the physical edge device. If enabled, the driver initializes an internal `rclpy` node and co-publishes actual `sensor_msgs.msg.LaserScan` standard messages straight to the physical host's local ROS Data distribution service.
 
 ## License
 
