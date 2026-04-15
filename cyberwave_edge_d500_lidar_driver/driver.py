@@ -139,8 +139,8 @@ class CyberwaveEdgeD500LidarDriver:
         logger.info("Driver running (twin=%s)", self.twin_uuid)
         while True:
             try:
-                # Use read_scan from the updated HardwareClient
-                scan_data = self._hardware.read_scan()
+                # Use read_state from the updated HardwareClient
+                scan_data = self._hardware.read_state()
                 if scan_data:
                     ts = scan_data["ts"]
                     raw_points = scan_data["points"]
@@ -149,12 +149,14 @@ class CyberwaveEdgeD500LidarDriver:
                         continue
 
                     # 2. Prepare LaserScan data
+                    # Flip from left-hand to right-hand (CCW) coordinate system
+                    # Many LDRobot sensors report CW, ROS expects CCW.
                     sorted_points = sorted(raw_points, key=lambda x: x["angle"])
-                    ranges = [p["distance"] / 1000.0 for p in sorted_points]
-                    intensities = [float(p["intensity"]) for p in sorted_points]
+                    ranges = [p["distance"] / 1000.0 for p in reversed(sorted_points)]
+                    intensities = [float(p["intensity"]) for p in reversed(sorted_points)]
                     
-                    angle_min = np.deg2rad(sorted_points[0]["angle"])
-                    angle_max = np.deg2rad(sorted_points[-1]["angle"])
+                    angle_min = np.deg2rad(360.0 - sorted_points[-1]["angle"])
+                    angle_max = np.deg2rad(360.0 - sorted_points[0]["angle"])
                     angle_increment = (angle_max - angle_min) / (len(sorted_points) - 1) if len(sorted_points) > 1 else 0
 
                     current_time = time.time()
@@ -185,7 +187,7 @@ class CyberwaveEdgeD500LidarDriver:
                         self.cw.mqtt.publish(topic, laser_scan_json)
 
                         # Example: update position if robot_x is in metadata or elsewhere
-                        # self.cw.mqtt.update_twin_position(self.twin_uuid, {"x": 0.0, "y": 0.0, "z": 0.0})
+                        self.cw.mqtt.update_twin_position(self.twin_uuid, {"x": 0.0, "y": 0.0, "z": 0.0})
 
                         self._last_cw_publish_time = current_time
 

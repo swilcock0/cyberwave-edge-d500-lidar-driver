@@ -65,7 +65,7 @@ class HardwareClient:
             raise RuntimeError(f"Failed to start lidar on {self.port} ({self.product})")
         logger.info("Connected to Lidar on %s", self.port)
 
-    def read_scan(self) -> Optional[dict[str, Any]]:
+    def read_state(self) -> Optional[dict[str, Any]]:
         """Polls the lidar for a new scan."""
         if not self._lib:
             return None
