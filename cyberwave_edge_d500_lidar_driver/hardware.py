@@ -30,7 +30,7 @@ class HardwareClient:
 
     def __init__(self, config: dict[str, Any]) -> None:
         self.config = config
-        self.port = config.get("serial_port", os.getenv("LIDAR_PORT", "/dev/ttyUSB0"))
+        self.port = config.get("serial_port", os.getenv("LIDAR_PORT", "/dev/ttyACM0")) # Use /dev/ttyUSB0 for USB connection if using tty-usb board
         self.product = config.get("product_name", os.getenv("LIDAR_PRODUCT", "LD19"))
         self._lib: Optional[ctypes.CDLL] = None
 

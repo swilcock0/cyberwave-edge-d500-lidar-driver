@@ -2,10 +2,12 @@ services:
   driver:
     build: .
     env_file: .env
+    # Pass through a USB/serial device if needed:
     devices:
-      - /dev/ttyUSB0:/dev/ttyUSB0
+      # - /dev/ttyUSB0:/dev/ttyUSB0 # Uncomment and adjust if your LiDAR is connected via USB
+      - /dev/ttyACM0:/dev/ttyACM0 # Example for a serial device, adjust as necessary
     volumes:
-      - /tmp/cyberwave-twin.json:/app/cyberwave-twin.json
+      - /home/ws/d500-twin.json:/app/cyberwave-twin.json
     environment:
       CYBERWAVE_TWIN_JSON_FILE: /app/cyberwave-twin.json
       ENABLE_ROS: "true"
