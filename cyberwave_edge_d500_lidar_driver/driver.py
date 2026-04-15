@@ -55,6 +55,19 @@ class CyberwaveEdgeD500LidarDriver:
 
         # Initialize Cyberwave SDK for data publishing
         self.cw = Cyberwave(api_key=api_key, source_type="edge")
+        try:
+            self.cw.mqtt.connect()
+            logger.info("Connected to Cyberwave MQTT broker")
+
+            # Start health publisher to stop "stale" status
+            from cyberwave.edge.health import EdgeHealthCheck
+            self.health = EdgeHealthCheck(
+                mqtt_client=self.cw.mqtt,
+                twin_uuids=[self.twin_uuid],
+            )
+            self.health.start()
+        except Exception:
+            logger.exception("Failed to initialize Cyberwave MQTT or Health")
 
         self._hardware = self._connect_hardware()
         self._last_cw_publish_time = 0.0
@@ -146,12 +159,18 @@ class CyberwaveEdgeD500LidarDriver:
 
                     current_time = time.time()
                     if current_time - self._last_cw_publish_time >= 1.0:
+                        # Mark health as active
+                        if hasattr(self, "health"):
+                            self.health.update_frame_count()
+
                         # 1. Update twin state with telemetry (e.g. status)
                         self._update_twin_state({"lidar_status": "streaming", "points_count": len(raw_points)})
 
-                        # 3. Publish to Cyberwave (Zenoh/MQTT)
+                        # 3. Publish to Cyberwave MQTT
                         laser_scan_json = {
                             "ts": ts,
+                            "type": "scan",
+                            "source_type": "edge",
                             "angle_min": float(angle_min),
                             "angle_max": float(angle_max),
                             "angle_increment": float(angle_increment),
@@ -162,7 +181,12 @@ class CyberwaveEdgeD500LidarDriver:
                             "ranges": ranges,
                             "intensities": intensities
                         }
-                        self.cw.data.publish("telemetry", laser_scan_json)
+                        topic = f"cyberwave/twin/{self.twin_uuid}/scan"
+                        self.cw.mqtt.publish(topic, laser_scan_json)
+
+                        # Example: update position if robot_x is in metadata or elsewhere
+                        # self.cw.mqtt.update_twin_position(self.twin_uuid, {"x": 0.0, "y": 0.0, "z": 0.0})
+
                         self._last_cw_publish_time = current_time
 
                     # 4. Optional: Publish directly to ROS2 if initialized
