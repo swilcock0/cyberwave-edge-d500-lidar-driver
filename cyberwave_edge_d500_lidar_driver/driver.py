@@ -65,7 +65,7 @@ class CyberwaveEdgeD500LidarDriver:
             logger.info("ROS2 not available in environment, skipping native ROS publishing")
             return
 
-        enable_ros = self.edge_configs.get("enable_ros", os.getenv("ENABLE_ROS", "false").lower() == "true")
+        enable_ros = self.edge_configs.get("enable_ros", os.getenv("ENABLE_ROS", "true").lower() == "true")
         if not enable_ros:
             logger.info("ROS2 available but disabled via config (enable_ros=false)")
             return
