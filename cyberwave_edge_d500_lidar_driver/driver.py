@@ -139,8 +139,8 @@ class CyberwaveEdgeD500LidarDriver:
         logger.info("Driver running (twin=%s)", self.twin_uuid)
         while True:
             try:
-                # Use read_scan from the updated HardwareClient
-                scan_data = self._hardware.read_scan()
+                # Use read_state from the updated HardwareClient
+                scan_data = self._hardware.read_state()
                 if scan_data:
                     ts = scan_data["ts"]
                     raw_points = scan_data["points"]
