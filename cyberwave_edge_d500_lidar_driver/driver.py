@@ -139,8 +139,8 @@ class CyberwaveEdgeD500LidarDriver:
         logger.info("Driver running (twin=%s)", self.twin_uuid)
         while True:
             try:
-                # Use read_state from the updated HardwareClient
-                scan_data = self._hardware.read_state()
+                # Use read_scan from the updated HardwareClient
+                scan_data = self._hardware.read_scan()
                 if scan_data:
                     ts = scan_data["ts"]
                     raw_points = scan_data["points"]
@@ -151,9 +151,20 @@ class CyberwaveEdgeD500LidarDriver:
                     # 2. Prepare LaserScan data
                     # Flip from left-hand to right-hand (CCW) coordinate system
                     # Many LDRobot sensors report CW, ROS expects CCW.
+                    clip_lidar = self.edge_configs.get("clip_lidar", str(os.getenv("CLIP_LIDAR", "true")).lower() == "true")
+                    angle_crop_min = float(self.edge_configs.get("angle_crop_min", 225.0))
+                    angle_crop_max = float(self.edge_configs.get("angle_crop_max", 315.0))
+
                     sorted_points = sorted(raw_points, key=lambda x: x["angle"])
-                    ranges = [p["distance"] / 1000.0 for p in reversed(sorted_points)]
-                    intensities = [float(p["intensity"]) for p in reversed(sorted_points)]
+                    ranges = []
+                    intensities = []
+                    for p in reversed(sorted_points):
+                        if clip_lidar and (angle_crop_min <= p["angle"] <= angle_crop_max):
+                            ranges.append(float('nan'))
+                            intensities.append(float('nan'))
+                        else:
+                            ranges.append(p["distance"] / 1000.0)
+                            intensities.append(float(p["intensity"]))
                     
                     angle_min = np.deg2rad(360.0 - sorted_points[-1]["angle"])
                     angle_max = np.deg2rad(360.0 - sorted_points[0]["angle"])
